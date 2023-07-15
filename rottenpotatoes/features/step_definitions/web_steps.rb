@@ -78,6 +78,22 @@ end
 #
 When /^(?:|I )fill in the following:$/ do |fields|
   fields.rows_hash.each do |name, value|
+    if page.has_field?(name, type: 'checkbox')
+      if value.downcase == 'checked' || value.downcase == 'true'
+        check(name)
+      else
+        uncheck(name)
+      end
+    elsif page.has_field?(name, type: 'select') || page.has_field?(name, type: 'option')
+      select(value, :from => name)
+    else
+      fill_in(name, :with => value)
+    end
+  end
+end
+
+When /^(?:|I )fill in the following:$/ do |fields|
+  fields.rows_hash.each do |name, value|
     When %{I fill in "#{name}" with "#{value}"}
   end
 end
